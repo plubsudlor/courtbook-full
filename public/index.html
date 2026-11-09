@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>CourtBook | ภาพรวมวันนี้</title>
+    <style>
+        :root {
+            --bg: #f7f6f3;
+            --card: #fff;
+            --tx: #1f1e1b;
+            --tx2: #6b6962;
+            --bd: #e3e1da;
+            --ac: #d9632b;
+            --acbg: #fbeee6;
+            --ok: #2f7d4f;
+            --okbg: #e6f3ea;
+            --no: #b3392f;
+            --nobg: #fbe9e7;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px)
+        }
+
+        @media (prefers-color-scheme:dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #1c1b19;
+                --card: #262522;
+                --tx: #f1efe9;
+                --tx2: #a5a299;
+                --bd: #3a3935;
+                --ac: #f08a55;
+                --acbg: #3a2a21;
+                --ok: #6fc28f;
+                --okbg: #213428;
+                --no: #ee8479;
+                --nobg: #3b2421
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #1c1b19;
+            --card: #262522;
+            --tx: #f1efe9;
+            --tx2: #a5a299;
+            --bd: #3a3935;
+            --ac: #f08a55;
+            --acbg: #3a2a21;
+            --ok: #6fc28f;
+            --okbg: #213428;
+            --no: #ee8479;
+            --nobg: #3b2421
+        }
+
+        html {
+            scroll-padding-top: env(safe-area-inset-top, 0px)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--tx);
+            font-family: system-ui, -apple-system, "Noto Sans Thai", "Sarabun", sans-serif;
+            line-height: 1.5
+        }
+
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 16px
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0
+        }
+
+        .sub {
+            color: var(--tx2);
+            font-size: 13px;
+            margin: 2px 0 16px
+        }
+
+        h2 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 24px 0 8px
+        }
+
+        button {
+            font: inherit;
+            color: inherit;
+            cursor: pointer
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--bd);
+            border-radius: 12px
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .stat {
+            padding: 14px;
+            text-align: left;
+            width: 100%
+        }
+
+        .stat:hover,
+        .row:hover,
+        .court:hover {
+            border-color: var(--ac)
+        }
+
+        .stat small {
+            color: var(--tx2);
+            font-size: 13px;
+            display: block
+        }
+
+        .stat b {
+            font-size: 30px;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2
+        }
+
+        .stat em {
+            font-style: normal;
+            color: var(--ac);
+            font-size: 12px
+        }
+
+        .chart {
+            display: flex;
+            gap: 8px;
+            padding: 14px 12px 10px
+        }
+
+        .col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: 0;
+            padding: 0;
+            min-width: 0
+        }
+
+        .col .num {
+            font-size: 12px;
+            color: var(--tx2);
+            height: 18px
+        }
+
+        .col .area {
+            height: 110px;
+            width: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center
+        }
+
+        .col .bar {
+            width: 70%;
+            background: var(--ac);
+            border-radius: 4px 4px 0 0;
+            min-height: 3px
+        }
+
+        .col:hover .bar {
+            opacity: .75
+        }
+
+        .col .lbl {
+            font-size: 12px;
+            color: var(--tx2);
+            margin-top: 6px
+        }
+
+        .col.today .lbl {
+            color: var(--tx);
+            font-weight: 600
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .row,
+        .court {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            width: 100%;
+            text-align: left
+        }
+
+        .row .m,
+        .court .m {
+            flex: 1;
+            min-width: 0
+        }
+
+        .row b,
+        .court b {
+            display: block;
+            font-weight: 600;
+            font-size: 14px
+        }
+
+        .row span.s,
+        .court span.s {
+            display: block;
+            font-size: 12px;
+            color: var(--tx2)
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: var(--okbg);
+            color: var(--ok);
+            white-space: nowrap
+        }
+
+        .tag.x {
+            background: var(--nobg);
+            color: var(--no)
+        }
+
+        .tag.a {
+            background: var(--acbg);
+            color: var(--ac)
+        }
+
+        .chev {
+            color: var(--tx2)
+        }
+
+        #ov {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 20;
+            align-items: flex-end;
+            justify-content: center
+        }
+
+        #ov.on {
+            display: flex
+        }
+
+        #sheet {
+            background: var(--card);
+            width: 100%;
+            max-width: 720px;
+            max-height: 85%;
+            overflow-y: auto;
+            border-radius: 16px 16px 0 0;
+            padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px))
+        }
+
+        .hd {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px
+        }
+
+        .hd h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600
+        }
+
+        .x-btn {
+            background: none;
+            border: 1px solid var(--bd);
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-size: 13px
+        }
+
+        .slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+            gap: 8px
+        }
+
+        .slot {
+            padding: 8px 4px;
+            border-radius: 8px;
+            border: 1px solid var(--bd);
+            background: var(--okbg);
+            color: var(--ok);
+            font-size: 13px;
+            text-align: center
+        }
+
+        .slot.b {
+            background: var(--acbg);
+            color: var(--ac);
+            border-color: var(--ac)
+        }
+
+        .kv {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 8px 12px;
+            font-size: 14px;
+            margin: 4px 0 16px
+        }
+
+        .kv dt {
+            color: var(--tx2)
+        }
+
+        .kv dd {
+            margin: 0
+        }
+
+        .danger {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--no);
+            background: var(--nobg);
+            color: var(--no);
+            font-weight: 600
+        }
+
+        .empty {
+            color: var(--tx2);
+            font-size: 14px;
+            padding: 12px 0
+        }
+
+        .top {
+            background: #111827;
+            padding: 14px 12px 10px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 600;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 4px
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            margin: 12px auto 0;
+            max-width: 720px;
+            scrollbar-width: none
+        }
+
+        .tab {
+            background: none;
+            border: 0;
+            color: #cbd5e1;
+            padding: 10px 16px;
+            border-radius: 12px;
+            white-space: nowrap;
+            font-size: 15px
+        }
+
+        .tab.on {
+            background: #e07a3a;
+            color: #fff;
+            font-weight: 600
+        }
+
+        .chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 8px 0 12px
+        }
+
+        .chip {
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--bd);
+            background: var(--card);
+            font-size: 13px
+        }
+
+        .chip.on {
+            background: var(--ac);
+            color: #fff;
+            border-color: var(--ac)
+        }
+
+        .hb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            font-size: 13px
+        }
+
+        .hl {
+            width: 90px;
+            color: var(--tx2);
+            flex: none
+        }
+
+        .ht {
+            flex: 1;
+            height: 14px;
+            background: var(--bd);
+            border-radius: 7px;
+            overflow: hidden
+        }
+
+        .hf {
+            display: block;
+            height: 100%;
+            background: var(--ac)
+        }
+
+        .hn {
+            width: 24px;
+            text-align: right
+        }
+
+        .primary {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--ac);
+            color: #fff;
+            font-weight: 600;
+            font-size: 15px;
+            margin: 0 0 16px
+        }
+
+        .inp {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--bd);
+            border-radius: 10px;
+            background: var(--bg);
+            color: var(--tx);
+            font: inherit;
+            margin: 4px 0 12px
+        }
+
+        .lab {
+            font-size: 13px;
+            color: var(--tx2);
+            display: block;
+            margin-top: 4px
+        }
+
+        .err {
+            color: var(--no);
+            font-size: 13px;
+            margin: 0 0 10px
+        }
+
+        button.slot {
+            cursor: pointer;
+            font: inherit;
+            font-size: 13px
+        }
+
+        .slot.sel {
+            background: var(--ac);
+            color: #fff;
+            border-color: var(--ac)
+        }
+
+        .slot.off {
+            opacity: .45;
+            background: var(--bg);
+            color: var(--tx2)
+        }
+    </style>
+</head>
+
+<body>
+    <header class="top">
+        <div class="brand"><svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true">
+                <circle cx="20" cy="20" r="19" fill="#e07a3a" />
+                <path d="M20 1v38M1 20h38M7 6c7 6 7 22 0 28M33 6c-7 6-7 22 0 28" fill="none" stroke="#111827"
+                    stroke-width="2" />
+            </svg><span>CourtBook</span></div>
+        <nav class="tabs"><button class="tab on" data-tab="home">ภาพรวม</button><button class="tab"
+                data-tab="bookings">การจอง</button><button class="tab" data-tab="courts">สนาม</button><button
+                class="tab" data-tab="customers">ลูกค้า</button><button class="tab"
+                data-tab="slots">ช่วงเวลาว่าง</button><button class="tab" data-tab="report">รายงาน</button></nav>
+    </header>
+    <main>
+        <button class="primary" id="newB">+ จองสนาม</button>
+        <section id="v-home">
+            <h1>ภาพรวมวันนี้</h1>
+            <p class="sub" id="date"></p>
+            <div class="stats">
+                <button class="card stat" id="sToday"><small>จองวันนี้</small><b
+                        id="nToday">0</b><em>กดเพื่อดูรายการ</em></button>
+                <button class="card stat" id="sMonth"><small>จองเดือนนี้</small><b
+                        id="nMonth">0</b><em>กดเพื่อดูรายการ</em></button>
+            </div>
+            <h2>จำนวนการจอง 7 วันล่าสุด</h2>
+            <div class="card chart" id="chart"></div>
+            <h2>สนาม</h2>
+            <div class="list" id="courts"></div>
+            <h2>การจองล่าสุด</h2>
+            <div class="list" id="recent"></div>
+        </section>
+        <section id="v-page" hidden></section>
+    </main>
+    <div id="ov">
+        <div id="sheet"></div>
+    </div>
+    <script>
+        var T = new Date(); T.setHours(0, 0, 0, 0);
+        var NAMES = ['สมชาย', 'มานี', 'ปิติ', 'วีระ', 'นภา', 'ธนา', 'กานดา', 'อนุชา'];
+        var COURTS = {A: 'สนาม A', B: 'สนาม B'};
+        var bookings = [];
+        function ymd(d) {return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')}
+        function fromApi(x) {var p = x.date.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]); return {id: x.id, off: Math.round((d - T) / 864e5), date: d, court: x.court, hour: x.hour, name: x.name, phone: x.phone, cancelled: x.status === 'cancelled'}}
+        function load() {return fetch('/api/bookings').then(function (r) {return r.json()}).then(function (l) {bookings = l.map(fromApi); render(); showTab(cur)}).catch(function () {alert('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้')})}
+        var TH = {day: 'numeric', month: 'short'};
+        function fd(d) {return d.toLocaleDateString('th-TH', TH)}
+        function hh(h) {return (h < 10 ? '0' : '') + h + ':00-' + (h + 1 < 10 ? '0' : '') + (h + 1) + ':00'}
+        function live(b) {return !b.cancelled}
+        function $(id) {return document.getElementById(id)}
+        function render() {
+            $('date').textContent = T.toLocaleDateString('th-TH', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
+            var td = bookings.filter(function (b) {return b.off === 0 && live(b)});
+            var mo = bookings.filter(function (b) {return b.date.getMonth() === T.getMonth() && live(b)});
+            $('nToday').textContent = td.length; $('nMonth').textContent = mo.length;
+            var counts = [], max = 1, i;
+            for (i = -6; i <= 0; i++) {var c = bookings.filter(function (b) {return b.off === i && live(b)}).length; counts.push(c); if (c > max) max = c}
+            var h = '';
+            counts.forEach(function (c, k) {
+                var off = k - 6; var d = new Date(T); d.setDate(d.getDate() + off);
+                h += '<button class="col' + (off === 0 ? ' today' : '') + '" data-off="' + off + '" aria-label="' + fd(d) + ' จอง ' + c + ' ครั้ง"><span class="num">' + c + '</span><span class="area"><span class="bar" style="height:' + Math.round(c / max * 100) + '%"></span></span><span class="lbl">' + d.toLocaleDateString('th-TH', {weekday: 'short'}) + '</span></button>'
+            });
+            $('chart').innerHTML = h;
+            var ch = '';
+            Object.keys(COURTS).forEach(function (k) {
+                var n = td.filter(function (b) {return b.court === k}).length;
+                ch += '<button class="card court" data-court="' + k + '"><span class="m"><b>' + COURTS[k] + '</b><span class="s">วันนี้จอง ' + n + ' ช่วง</span></span><span class="tag">เปิดใช้งาน</span><span class="chev">›</span></button>'
+            });
+            $('courts').innerHTML = ch;
+            $('recent').innerHTML = rows(bookings.slice().sort(function (a, b) {return b.off - a.off || b.hour - a.hour}).slice(0, 6));
+        }
+        function rows(list) {
+            if (!list.length) return '<div class="empty">ยังไม่มีรายการจอง</div>';
+            return list.map(function (b) {return '<button class="card row" data-id="' + b.id + '"><span class="m"><b>' + b.name + ' · ' + COURTS[b.court] + '</b><span class="s">' + fd(b.date) + ' · ' + hh(b.hour) + '</span></span><span class="tag' + (b.cancelled ? ' x' : '') + '">' + (b.cancelled ? 'ยกเลิก' : 'จองแล้ว') + '</span><span class="chev">›</span></button>'}).join('');
+        }
+        function open(title, body) {$('sheet').innerHTML = '<div class="hd"><h3>' + title + '</h3><button class="x-btn" id="close">ปิด</button></div>' + body; $('ov').classList.add('on'); $('close').onclick = close}
+        function close() {$('ov').classList.remove('on')}
+        function listView(title, list) {open(title, '<div class="list">' + rows(list) + '</div>')}
+        function courtView(k) {
+            var tb = bookings.filter(function (b) {return b.off === 0 && b.court === k && live(b)});
+            var s = ''; for (var h = 8; h < 22; h++) {
+                var b = tb.filter(function (x) {return x.hour === h})[0];
+                s += b ? '<button class="slot b" data-id="' + b.id + '">' + hh(h).slice(0, 5) + ' · จองแล้ว</button>' : '<div class="slot">' + hh(h).slice(0, 5) + ' · ว่าง</div>'
+            }
+            open(COURTS[k] + ' · ตารางวันนี้', '<div class="slots">' + s + '</div>');
+        }
+        function detail(id) {
+            var b = bookings.filter(function (x) {return x.id === id})[0];
+            var btn = b.cancelled ? '<div class="tag x" style="display:inline-block">การจองนี้ถูกยกเลิกแล้ว</div>' : '<button class="danger" id="cx">ยกเลิกการจอง</button>';
+            open('รายละเอียดการจอง', '<dl class="kv"><dt>รหัส</dt><dd>' + b.id.slice(-6).toUpperCase() + '</dd><dt>ผู้จอง</dt><dd>' + b.name + '</dd><dt>สนาม</dt><dd>' + COURTS[b.court] + '</dd><dt>วันที่</dt><dd>' + fd(b.date) + '</dd><dt>เวลา</dt><dd>' + hh(b.hour) + '</dd>' + (b.phone ? '<dt>เบอร์โทร</dt><dd>' + b.phone + '</dd>' : '') + '</dl>' + btn);
+            if (!b.cancelled) $('cx').onclick = function () {
+                var box = document.createElement('div');
+                box.innerHTML = '<p class="err" style="margin:0 0 10px">ยืนยันยกเลิกการจองนี้?</p><div style="display:flex;gap:8px"><button class="danger" id="cy">ยืนยันยกเลิก</button><button class="x-btn" id="cn" style="padding:10px 16px;white-space:nowrap">ไม่ยกเลิก</button></div>';
+                this.replaceWith(box);
+                $('cy').onclick = function () {fetch('/api/bookings/' + id + '/cancel', {method: 'PATCH'}).then(function () {return load()}).then(function () {detail(id)})};
+                $('cn').onclick = function () {detail(id)};
+            };
+        }
+        document.addEventListener('click', function (e) {
+            var t = e.target.closest('button'); if (e.target.id === 'ov') {close(); return }
+            if (!t) return;
+            if (t.id === 'sToday') listView('จองวันนี้', bookings.filter(function (b) {return b.off === 0}));
+            else if (t.id === 'sMonth') listView('จองเดือนนี้', bookings.filter(function (b) {return b.date.getMonth() === T.getMonth()}));
+            else if (t.dataset.off !== undefined) {var o = +t.dataset.off, d = new Date(T); d.setDate(d.getDate() + o); listView('การจองวันที่ ' + fd(d), bookings.filter(function (b) {return b.off === o}))}
+            else if (t.dataset.court) courtView(t.dataset.court);
+            else if (t.dataset.id) detail(t.dataset.id);
+        });
+        var cur = 'home', bf = 'all', sd = 0, sc = 'A';
+        var nb = {court: 'A', off: 0, hour: null, name: '', phone: ''};
+        function esc(s) {return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}
+        function freeHours() {var n = new Date(), tb = bookings.filter(function (b) {return b.off === nb.off && b.court === nb.court && live(b)}), r = []; for (var h = 8; h < 22; h++) {r.push([h, tb.some(function (b) {return b.hour === h}), nb.off === 0 && h <= n.getHours()])} return r}
+        function formView(err) {
+            var a = document.getElementById('fname');
+            if (a) {nb.name = a.value; nb.phone = document.getElementById('fphone').value}
+            var ch = Object.keys(COURTS).map(function (k) {return chip('nc', k, COURTS[k], nb.court === k)}).join('');
+            var dc = [0, 1, 2, 3, 4, 5, 6].map(function (o) {return chip('nd', o, o === 0 ? 'วันนี้' : fd(dOff(o)), nb.off === o)}).join('');
+            var sl = freeHours().map(function (x) {
+                var h = x[0], t = hh(h).slice(0, 5);
+                if (x[1]) return '<div class="slot b">' + t + ' · จองแล้ว</div>';
+                if (x[2]) return '<div class="slot off">' + t + ' · ผ่านไปแล้ว</div>';
+                return '<button class="slot' + (nb.hour === h ? ' sel' : '') + '" data-nh="' + h + '">' + t + ' · ว่าง</button>'
+            }).join('');
+            open('จองสนาม', '<span class="lab">สนาม</span><div class="chips">' + ch + '</div><span class="lab">วันที่</span><div class="chips">' + dc + '</div><span class="lab">ช่วงเวลา (ช่วงละ 1 ชั่วโมง)</span><div class="slots" style="margin:6px 0 14px">' + sl + '</div><label class="lab" for="fname">ชื่อผู้จอง</label><input class="inp" id="fname" placeholder="สมชาย" value="' + esc(nb.name) + '"><label class="lab" for="fphone">เบอร์โทร</label><input class="inp" id="fphone" inputmode="tel" placeholder="0812345678" value="' + esc(nb.phone) + '">' + (err ? '<p class="err">' + err + '</p>' : '') + '<button class="primary" id="save" style="margin:0">ยืนยันการจอง</button>');
+        }
+        function saveBooking() {
+            nb.name = document.getElementById('fname').value.trim(); nb.phone = document.getElementById('fphone').value.trim();
+            if (nb.hour === null) return formView('เลือกช่วงเวลาก่อน');
+            if (!nb.name) return formView('กรอกชื่อผู้จอง');
+            if (!/^0\d{8,9}$/.test(nb.phone)) return formView('กรอกเบอร์โทร 9-10 หลัก เช่น 0812345678');
+            if (bookings.some(function (b) {return live(b) && b.off === nb.off && b.court === nb.court && b.hour === nb.hour})) return formView('ช่วงเวลานี้ถูกจองแล้ว เลือกช่วงอื่น');
+            if (bookings.some(function (b) {return b.phone === nb.phone && b.name !== nb.name})) return formView('เบอร์นี้ถูกใช้โดยลูกค้าคนอื่นแล้ว');
+            fetch('/api/bookings', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({court: nb.court, date: ymd(dOff(nb.off)), hour: nb.hour, name: nb.name, phone: nb.phone})}).then(function (r) {return r.json().then(function (j) {return {ok: r.ok, j: j}})}).then(function (x) {if (!x.ok) return formView(x.j.error); var id = x.j.id; nb.hour = null; nb.name = ''; nb.phone = ''; return load().then(function () {detail(id)})}).catch(function () {formView('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้')});
+        }
+        function dOff(o) {var d = new Date(T); d.setDate(d.getDate() + o); return d}
+        function chip(a, v, l, on) {return '<button class="chip' + (on ? ' on' : '') + '" data-' + a + '="' + v + '">' + l + '</button>'}
+        function hbars(P) {var m = Math.max.apply(null, P.map(function (p) {return p[1]}).concat(1)); return P.map(function (p) {return '<div class="hb"><span class="hl">' + p[0] + '</span><span class="ht"><span class="hf" style="width:' + Math.round(p[1] / m * 100) + '%"></span></span><span class="hn">' + p[1] + '</span></div>'}).join('')}
+        function showTab(t) {
+            cur = t;
+            document.querySelectorAll('.tab').forEach(function (x) {x.classList.toggle('on', x.dataset.tab === t)});
+            $('v-home').hidden = t !== 'home'; $('v-page').hidden = t === 'home';
+            if (t === 'home') return;
+            var p = $('v-page'), h0 = '<h2 style="margin-top:0">', s = '';
+            if (t === 'bookings') {
+                var L = bookings.filter(function (b) {return bf === 'all' || (bf === 'ok' ? live(b) : b.cancelled)}).sort(function (a, b) {return b.off - a.off || b.hour - a.hour});
+                s = h0 + 'การจองทั้งหมด</h2><div class="chips">' + chip('f', 'all', 'ทั้งหมด', bf === 'all') + chip('f', 'ok', 'จองแล้ว', bf === 'ok') + chip('f', 'x', 'ยกเลิก', bf === 'x') + '</div><div class="list">' + rows(L) + '</div>';
+            } else if (t === 'courts') {
+                s = h0 + 'สนามทั้งหมด</h2><div class="list">' + Object.keys(COURTS).map(function (k) {var ok = bookings.filter(function (b) {return b.court === k && live(b)}); var n = ok.filter(function (b) {return b.off === 0}).length; return '<button class="card court" data-court="' + k + '"><span class="m"><b>' + COURTS[k] + '</b><span class="s">วันนี้ ' + n + ' ช่วง · รวม ' + ok.length + ' การจอง</span></span><span class="tag">เปิดใช้งาน</span><span class="chev">›</span></button>'}).join('') + '</div>';
+            } else if (t === 'customers') {
+                var m = {}; bookings.forEach(function (b) {var c = m[b.name] || (m[b.name] = {n: 0, last: -99}); if (live(b)) c.n++; if (b.off > c.last) c.last = b.off});
+                s = h0 + 'ลูกค้า</h2><div class="list">' + Object.keys(m).sort(function (a, b) {return m[b].n - m[a].n}).map(function (n) {return '<button class="card row" data-cust="' + n + '"><span class="m"><b>' + n + '</b><span class="s">จอง ' + m[n].n + ' ครั้ง · ล่าสุด ' + (m[n].last === 0 ? 'วันนี้' : fd(dOff(m[n].last))) + '</span></span><span class="chev">›</span></button>'}).join('') + '</div>';
+            } else if (t === 'slots') {
+                var tb = bookings.filter(function (b) {return b.off === sd && b.court === sc && live(b)}), g = '';
+                for (var h = 8; h < 22; h++) {var b = tb.filter(function (x) {return x.hour === h})[0]; g += b ? '<button class="slot b" data-id="' + b.id + '">' + hh(h).slice(0, 5) + ' · จองแล้ว</button>' : '<div class="slot">' + hh(h).slice(0, 5) + ' · ว่าง</div>'}
+                s = h0 + 'ช่วงเวลาว่าง</h2><div class="chips">' + [0, 1, 2, 3].map(function (o) {return chip('sd', o, o === 0 ? 'วันนี้' : fd(dOff(o)), sd === o)}).join('') + '</div><div class="chips">' + Object.keys(COURTS).map(function (k) {return chip('sc', k, COURTS[k], sc === k)}).join('') + '</div><div class="slots">' + g + '</div>';
+            } else {
+                var ok = bookings.filter(live), H = {}; ok.forEach(function (b) {H[b.hour] = (H[b.hour] || 0) + 1});
+                s = h0 + 'รายงาน</h2><div class="card stat" style="cursor:default"><small>การจองที่ใช้งานทั้งหมด</small><b>' + ok.length + '</b></div><h2>แยกตามสนาม</h2><div class="card" style="padding:6px 14px">' + hbars(Object.keys(COURTS).map(function (k) {return [COURTS[k], ok.filter(function (b) {return b.court === k}).length]})) + '</div><h2>ช่วงเวลายอดนิยม</h2><div class="card" style="padding:6px 14px">' + hbars(Object.keys(H).sort(function (a, b) {return a - b}).map(function (h) {return [hh(+h).slice(0, 5), H[h]]})) + '</div>';
+            }
+            p.innerHTML = s;
+        }
+        document.addEventListener('click', function (e) {
+            var t = e.target.closest('button'); if (!t) return;
+            var d = t.dataset;
+            if (d.tab) {showTab(d.tab); window.scrollTo(0, 0)}
+            else if (d.f) {bf = d.f; showTab(cur)}
+            else if (d.sd) {sd = +d.sd; showTab(cur)}
+            else if (d.sc) {sc = d.sc; showTab(cur)}
+            else if (d.cust) listView(d.cust, bookings.filter(function (b) {return b.name === d.cust}));
+            else if (t.id === 'newB') {nb.hour = null; formView()}
+            else if (d.nc) {formView(); nb.court = d.nc; nb.hour = null; formView()}
+            else if (d.nd) {formView(); nb.off = +d.nd; nb.hour = null; formView()}
+            else if (d.nh) {formView(); nb.hour = +d.nh; formView()}
+            else if (t.id === 'save') saveBooking();
+        });
+        render();
+        load();
+    </script>
+</body>
+
+</html>
